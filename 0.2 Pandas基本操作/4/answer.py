@@ -1,46 +1,22 @@
-# 引入numpy库
-import numpy as np
+import pandas as pd
+# pandas版本原因显示，设置列名仅显示4列
+pd.set_option('display.max_columns', 4)
 
-def task1(A):
-    """
-    任务1: 计算矩阵 A 的平方根并与标量 2 相加
-    参数:
-    A: 输入的Numpy数组或列表
-    返回值:
-    task1_result: 任务1的结果
-    """
-    # 为确保输入的兼容性，首先将输入转换为Numpy数组
-    A = np.array(A)
-    # 计算矩阵 A 的平方根并与标量 2 相加
-    task1_result = np.sqrt(A) + 2
-    return task1_result
 
-def task2(A):
-    """
-    任务2: 将矩阵 A 开根号后的小数部分与原矩阵 A 相加
-    参数:
-    A: 输入的Numpy数组或列表
-    返回值:
-    task2_result: 任务2的结果
-    """
-    # 为确保输入的兼容性，首先将输入转换为Numpy数组
-    A = np.array(A)
-    # np.modf 会将小数和整数部分以两个独立数组的形式返回
-    fractional_part, integer_part = np.modf(np.sqrt(A))
-    task2_result = fractional_part + A
-    return task2_result
+def task():
+    '''
+    任务要求：实现使用Pandas读取gbk编码的文件（"FileHandling/Books.csv"），然后将数据写入到utf-8编码的文件中（"FileHandling/Out.csv"）并使用'*'号分隔数据。
+    提示1：使用参数encoding指定编码格式（'gbk' 和 'utf-8'）
+    提示2：使用参数sep指定数据分隔方式
+    '''
+    ########## Begin ##########
+    # 1. 使用 encoding='gbk' 读取源文件
+    books_df = pd.read_csv("FileHandling/Books.csv", encoding='gbk')
 
-def task3(A):
-    """
-    任务3: 使用通用函数 numpy.dot() 计算矩阵 A 与矩阵 A 转置的矢量积
-    参数:
-    A: 输入的Numpy数组或列表
-    返回值:
-    task3_result: 任务3的结果
-    """
-    # 为确保输入的兼容性，首先将输入转换为Numpy数组
-    A = np.array(A)
-    # 使用通用函数 numpy.dot() 计算矩阵 A 与矩阵 A 转置的矢量积
-    task3_result = np.dot(A, A.T)
-    return task3_result
+    # 2. 使用 to_csv 将数据写入新文件
+    #    encoding='utf-8' 指定新文件的编码
+    #    sep='*' 指定新文件的分隔符
+    #    index=False 表示不将 DataFrame 的索引写入到文件中
+    books_df.to_csv("FileHandling/Out.csv", encoding='utf-8', sep='*', index=True)
+    ########## End ##########
 

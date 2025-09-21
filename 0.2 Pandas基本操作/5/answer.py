@@ -1,31 +1,26 @@
-# 引入numpy库
+# -*- coding: utf-8 -*-
+from pandas import Series,DataFrame
 import numpy as np
+import  pandas as pd
 
-def task():
-    """
-    读取两个文件中的数组，相加后写入新文件。
-    """
-    # 定义文件路径
-    file_a_path = "step5/FileHandling/files/A.npy"
-    file_b_path = "step5/FileHandling/files/B.txt"
-    output_path = "step5/FileHandling/files/out.npy"
+def add_way():
+    '''
+    返回值:
+    df3: 一个DataFrame类型数据
+    '''
 
-    # 请在此处开始编写代码
-    # ********** Begin **********
+    # df1,df2是DataFrame类型数据
+    df1 = DataFrame(np.arange(12.).reshape((3, 4)), columns=list('abcd'))
+    df2 = DataFrame(np.arange(20.).reshape((4, 5)), columns=list('abcde'))
 
-    # 1. 从二进制文件 A.npy 中读取数组 A
-    A = np.load(file_a_path)
+    # 请在此添加代码 完成本关任务
+    # ********** Begin *********#
 
-    # 2. 从文本文件 B.txt 中读取数组 B, 假定分隔符为逗号
-    B = np.loadtxt(file_b_path, delimiter=',')
+    # 使用 .add() 方法进行相加，并使用 fill_value 参数指定填充值
+    # 在计算时，如果 df1 或 df2 中某个位置没有值，就会用 4 来代替
+    df3 = df1.add(df2, fill_value=4)
 
-    # 3. 使用 numpy.add() 对数组 A 和 B 进行求和
-    result = np.add(A, B)
+    # ********** End **********#
 
-    # 4. 将结果保存到二进制文件 out.npy
-    np.save(output_path, result)
-
-    # ********** End **********
-
-# 在平台测试时，通常会自动调用需要的函数。
-
+    # 返回df3
+    return df3

@@ -1,21 +1,44 @@
-# 引入numpy库
-import numpy as np
+import pandas as pd
 
-# 定义ce函数
-def ce(a, m, n):
+
+def task1():
     '''
-    参数：
-    a: 是一个Numpy数组
-    m: 是第m维数组的索引
-    n: 第m维数组的前n个元素的索引
-    返回值:
-    ret: 一个numpy数组
+    任务：使用describe()方法对给定数据进行统计描述汇总；
     '''
-    ret = 0
-    # 请在此添加切片的代码,实现找出多维数组a中第m个数组的前n个元素并赋值给ret
-    #********** Begin *********#
+    # 创建学生成绩数据
+    score = [
+        ["张三", 92, 95, 100, 96],
+        ["李四", 85, 80, 80, 90],
+        ["王二", 95, 90, 89, 95],
+        ["小刚", 88, 92, 96, 93]
+    ]
+    score = pd.DataFrame(score, columns=['姓名', '语文', '数学', '计算机', '英语'])
 
-    ret = a[m][:n]
+    ########## Begin ##########
+    # describe() 方法默认会对所有数值类型的列进行统计
+    result = score.describe()
+    ########## End ##########
 
-    #********** End **********#
-    return ret
+    return result
+
+
+def task2():
+    '''
+    任务：使用统计描述描述函数求各科目成绩的中位数；
+    '''
+    # 创建学生成绩数据
+    score = [
+        ["张三", 92, 95, 100, 96],
+        ["李四", 85, 80, 80, 90],
+        ["王二", 95, 90, 89, 95],
+        ["小刚", 88, 92, 96, 93]
+    ]
+    score = pd.DataFrame(score, columns=['姓名', '语文', '数学', '计算机', '英语'])
+
+    ########## Begin ##########
+    # 使用 median() 方法计算各科成绩的中位数
+    # numeric_only=True 确保只对数值列进行计算，避免对'姓名'列操作而出错
+    result = score.median(numeric_only=True)
+    ########## End ##########
+
+    return result

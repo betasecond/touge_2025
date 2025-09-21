@@ -1,23 +1,22 @@
-# 引入numpy库
-import numpy as np
-# 定义cnmda函数
-def cnmda(m,n):
-    '''
-    创建numpy数组
-    参数：
-    m:第一维的长度
-    n: 第二维的长度
-    返回值:
-    ret: 一个numpy数组
-    '''
-    ret = 0
+import pandas as pd
+import numpy as np # 导入 numpy 库以使用 np.nan
 
-    # 请在此添加创建多维数组的代码并赋值给ret
-    #********** Begin *********#
-    # 创建一个长度为 n 的列表作为数组的每一行
-    row = [y for y in range(n)]
-    # 将该行重复 m 次，并转换为 numpy 数组
-    ret = np.array([row] * m)
-    #********** End **********#
+########## Begin ##########
 
-    return ret
+# 1. 使用字典定义数据。字典的键是列名，值是包含列数据的列表。
+#    对于缺失值，我们使用 np.nan。
+data = {
+    'A': [90, 89, 78],
+    'B': [82, 95, 92],
+    'C': [78.0, 67.0, np.nan],
+    'D': [78.0, 67.0, np.nan]
+}
+
+# 2. 使用 pd.DataFrame() 函数创建 DataFrame。
+#    第一个参数是数据，第二个参数 `index` 用于指定行标签。
+df1 = pd.DataFrame(data, index=['a', 'b', 'c'])
+
+########## End ##########
+
+# 打印最终的 DataFrame
+print(df1)

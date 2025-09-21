@@ -1,133 +1,212 @@
-第2关：切片索引
-200
-学习内容
-参考答案
-记录
-评论
 任务描述
 相关知识
-索引
-遍历
-切片
+创建多级索引
+多级索引的取值与切片
 编程要求
-测试说明
 任务描述
-本关任务：根据本关所学知识，补全右侧代码编辑器中缺失的代码，完成ROI提取的功能。
+本关任务：根据相关知识以及编程要求，得到目标DataFrame多级索引。
 
 相关知识
-为了完成本关任务，你需要掌握：
+创建多级索引
+通过MultiIndex构建多级索引：
 
-索引；
-遍历；
-切片。
-索引
-ndarray的索引其实和python的list的索引极为相似。元素的索引从0开始。代码如下：
+index = [('California', 2000), ('California', 2010), ('New York', 2000), ('New York', 2010), ('Texas', 2000), ('Texas', 2010)]
+populations = [33871648, 37253956, 18976457, 19378102, 20851820, 25145561]
+pop = pd.Series(populations, index=index)
+# 1.基于元组创建
+index1 = pd.MultiIndex.from_tuples(index)
+index1
+Out：
+MultiIndex(levels=[['California', 'New York', 'Texas'], [2000, 2010]], codes=[[0, 0, 1, 1, 2, 2], [0, 1, 0, 1, 0, 1]])
+MultiIndex里面有一个levels属性表示索引的等级——这样做可以将州名和年份作为每个数据点的不同标签。如果将前面创建的pop的索引重置（reindex）为MultiIndex，就会看到层级索引。其中前两列表示Series的多级索引值，第三列式数据。
 
-import numpy as np
-# a中有4个元素，那么这些元素的索引分别为0，1，2，3
-a = np.array([2, 15, 3, 7])
-# 打印第2个元素
-# 索引1表示的是a中的第2个元素
-# 结果为15
-print(a[1])
-# b是个2行3列的二维数组
-b = np.array([[1, 2, 3], [4, 5, 6]])
-# 打印b中的第1行
-# 总共就2行，所以行的索引分别为0，1
-# 结果为[1, 2, 3]
-print(b[0])
-# 打印b中的第2行第2列的元素
-# 结果为5
-print(b[1][1])
-遍历
-ndarray的遍历方式与python的list的遍历方式也极为相似，示例代码如下：
+pop1 = pop.reindex(index1)
+pop1
+Out：
+California 2000 33871648
+2010 37253956
+New York   2000 18976457
+2010 19378102
+Texas      2000 20851820
+2010 25145561
+dtype: int64
+查询2010年的数据。
 
-import numpy as np
-a = np.array([2, 15, 3, 7])
-# 使用for循环将a中的元素取出来后打印
-for element in a:
-print(element)
-# 根据索引遍历a中的元素并打印
-for idx in range(len(a)):
-print(a[idx])
-# b是个2行3列的二维数组
-b = np.array([[1, 2, 3], [4, 5, 6]])
-# 将b展成一维数组后遍历并打印
-for element in b.flat:
-print(element)
-# 根据索引遍历b中的元素并打印
-for i in range(len(b)):
-for j in range(len(b[0])):
-print(b[i][j])
-切片
-ndarray的切片方式与python的list的遍历方式也极为相似，对切片不熟的同学也不用慌，套路很简单，就是用索引。
+pop[:, 2010]  # 得到的是一个单索引数组
+Out：
+California 37253956
+New York   19378102
+Texas      25145561
+dtype: int64
+以上的例子都是Series创建多级行索引，而每个DataFrame的行与列都是对称的，也就是说既然有多级行索引，那么同样可以有多级列索引。只需要在创建DataFrame时将columns的参数传入一个MultiIndex。
 
-假设想要将下图中紫色部分切片出来，就需要确定行的范围和列的范围。由于紫色部分行的范围是0到2，所以切片时行的索引范围是0:3(索引范围是左闭右开);又由于紫色部分列的范围也是0到2，所以切片时列的索引范围也是0:3(索引范围是左闭右开)。最后把行和列的索引范围整合起来就是[0:3, 0:3](,左边是行的索引范围)。当然有时为了方便，0可以省略，也就是[:3, :3]。
+通过二维索引数组创建多级索引：
+Series或DataFrame创建多级索引最直接的办法就是将index参数设置为至少二维的索引数组。
 
+df = pd.DataFrame(np.random.rand(4, 2), index=[['a', 'a', 'b', 'b'], [1, 2, 1, 2]], columns=['data1', 'data2'])
+df
+Out:
+data1    data2
+a 1 0.554233 0.356072
+2 0.925244 0.219474
+b 1 0.441759 0.610054
+2 0.171495 0.886688
+MultiIndex的创建工作将在后台完成。同理，如果你把将元组作为键的字典传递给Pandas，Pandas也会默认转换为MultiIndex。
 
+显示的创建多级索引：
+你可以用pd.MultiIndex中的类方法更加灵活地构建多级索引。
 
-切片示例代码如下：
+# 有不同等级的若干简单数组组成的列表来构建
+pd.MultiIndex.from_arrays([['a', 'a', 'b', 'b'], [1, 2, 1, 2]])
+# 包含多个索引值的元组构成的列表创建
+pd.MultiIndex.from_tuples([('a', 1), ('a', 2), ('b', 1), ('b', 2)])
+# 由两个索引的笛卡尔积（Cartesian product）创建
+pd.MultiIndex.from_product([['a', 'b'], [1, 2]])
+# 三种创建方法的结果都一致
+Out:
+MultiIndex(levels=[['a', 'b'], [1, 2]],
+codes=[[0, 0, 1, 1], [0, 1, 0, 1]])
+在创建Series或DataFrame时，可以将这些对象作为index参数，或者通过reindex方法更新Series或DataFrame的索引。
 
-import numpy as np
-# a中有4个元素，那么这些元素的索引分别为0，1，2，3
-a = np.array([2, 15, 3, 7])
-'''
-将索引从1开始到最后的所有元素切片出来并打印
-结果为[15  3  7]
-'''
-print(a[1:])
-'''
-将从倒数第2个开始到最后的所有元素切片出来并打印
-结果为[3  7]
-'''
-print(a[-2:])
-'''
-将所有元素倒序切片并打印
-利用第三个参数修改索引步长，默认为1，设置-1为倒序
-结果为[ 7  3 15  2]
-'''
-print(a[::-1])
-# b是个2行3列的二维数组
-b = np.array([[1, 2, 3], [4, 5, 6]])
-'''
-将第2行的第2列到第3列的所有元素切片并打印
-结果为[[5 6]]
-'''
-print(b[1:, 1:3])
-'''
-将第2列到第3列的所有元素切片并打印
-结果为[[2 3]
-[5 6]]
-'''
-print(b[:, 1:3])
+多级索引的等级名称
+你可以在前面任何一个MultiIndex构造器中通过names参数设置等级名称，也可以在创建之后通过索引的names属性来修改名称。
+
+pop.index.names = ['state', 'year']
+Out:
+state      year
+California 2000 33871648
+2010 37253956
+New York   2000 18976457
+2010 19378102
+Texas      2000 20851820
+2010 25145561
+dtype: int64
+多级列索引
+每个DataFrame的行与列都是对称的，也就是说既然有多级行索引，那么同样可以有多级列索引。
+
+多级索引与DataFrame的相互转换
+unstack()方法可以快速将一个多级索引的Series转化为普通索引的DataFrame。
+
+pop.unstack()   # stack()可以将DataFrame转换为多级索引
+Out：
+2000     2010
+California 33871648 37253956
+New York   18976457 19378102
+Texas      20851820 25145561
+多级索引的取值与切片
+Series多级索引；
+以各州历年人口数量创建的多级索引Series为例：
+
+pop
+Out:     
+state      year
+California 2000 33871648
+2010 37253956
+New York   2000 18976457
+2010 19378102
+Texas      2000 20851820
+2010 25145561
+dtype: int64
+获取单个元素：
+
+pop['California',2000]
+Out：
+33871648
+MultiIndex也支持局部取值（partial indexing），即只取索引的某一个层级。假如只取最高级的索引，获得的结果是一个新的Series，未被选中的低层索引值会被保留：
+
+pop['California']
+Out：
+year
+2000 33871648
+2010 37253956
+dtype: int640
+其他取值与数据选择的方法（详情请参考该实训）也都起作用。
+
+DataFrame多级索引：
+
+index = pd.MultiIndex.from_product([[2013, 2014], [1, 2]],
+names=['year', 'visit'])
+columns = pd.MultiIndex.from_product([['Bob', 'Guido', 'Sue'], ['HR', 'Temp']], names=['subject', 'type'])
+# 模拟数据
+data = np.round(np.random.randn(4, 6), 1)
+data[:, ::2] *= 10
+data += 37
+# 创建一个包含多级列索引的DataFrame
+health_data = pd.DataFrame(data, index=index, columns=columns)
+health_data
+Out：
+subject     Bob      Guido     Sue
+type        HR  Temp  HR  Temp  HR  Temp
+year  visit
+2013  1     31.0 38.7 32.0 36.7 35.0 37.2
+2 44. 0     37.7 50.0 35.0 29.0 36.7
+2014  1     30.0 37.4 39.0 37.8 61.0 36.9
+2 47. 0     37.8 48.0 37.3 51.0 36.5
+由于DataFrame的基本索引是列索引，因此Series中多级索引的用法到了DataFrame中就应用在列上了。
+
+health_data['Guido', 'HR']
+Out：
+year visit
+2013 1         32.0
+2         50.0
+2014 1         39.0
+2         48.0
+Name: (Guido, HR), dtype: float64
+loc、iloc、ix三个索引器都可以使用，虽然这些索引器将多维数据当作二维数据处理，但是在loc和iloc中可以传递多个层级的索引元组。
+
+health_data.loc[:, ('Bob', 'HR')]
+Out：
+year visit
+2013  1 31.0
+2 44.0
+2014  1 30.0
+2 47.0
+Name: (Bob, HR), dtype: float64
+这种索引元组的用法不是很方便，如果在元组中使用切片还会导致语法错误。
+
+health_data.loc[(:, 1), (:, 'HR')]
+# 这种切片方式会报错
+Pandas的IndexSlice对象可以解决上述问题。
+
+idx = pd.IndexSlice
+health_data.loc[idx[:, 1], idx[:, 'HR']]
+Out：
+subject     Bob  Guido Sue
+type        HR   HR    HR
+year visit
+2013 1      31.0 32.0  35.0
+2014 1      30.0 39.0  61.0
 编程要求
-在图像处理中，我们通常会将我们感兴趣的区域提取出来再进行处理，而这个感兴趣区域成为ROI(Region Of Interest)。本关的任务是根据提示，在右侧编辑器Begin-End处补充代码，根据测试用例的输入将ROI的提取并返回(ROI是一个矩阵)。
+本关的编程任务是补全右侧上部代码编辑区内的相应代码，要求实现如下功能：
+
+使用MultiIndex创建如下DataFrame多级索引：
+
+
+
+
+然后通过转置、stack()方法得到以下数据：
+
+
+
+
+最后通过取值和切片得到目标数据：
+
+
 
 具体要求请参见后续测试样例。
 请先仔细阅读右侧上部代码编辑区内给出的代码框架，再开始你的编程工作！
-
-测试说明
-平台会对你编写的代码进行测试。你只需按要求完成get_roi(data, x, y, w, h)函数即可。其中：
-
-data：待提取ROI的原始图像数据(其实就是个二维数组)，类型为ndarray；
-
-x: ROI的左上角顶点的行索引，类型为int；
-
-y: ROI的左上角顶点的列索引，类型为int；
-
-w: ROI的宽，类型为int；
-
-h: ROI的高，类型为int。
-
-测试用例是一个字典，字典中image部分表示原始图像的像素数据，x部分表示ROI的左上角顶点的行索引，y部分表示ROI的左上角顶点的列索引，w部分表示ROI的宽，h部分表示ROI的高。
+####测试说明
+平台会对你编写的代码进行测试，对比你输出的数值与实际正确的数值，只有所有数据全部计算正确才能进入下一关。
 
 测试输入：
-{'image':[[1, 2, 255, 255, 0], [255, 255, 0, 0, 3]], 'x':0, 'y':1, 'w':2, 'h':1}
+
+无测试输入
+
+平台会对你编写的代码进行测试：
 
 预期输出：
 
-[[  2 255 255]  [255   0   0]]
+
+
 
 开始你的任务吧，祝你成功！
-
-说点什么
