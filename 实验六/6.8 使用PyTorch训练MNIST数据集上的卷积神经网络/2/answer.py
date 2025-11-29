@@ -118,7 +118,7 @@ def main():
         transforms.ToTensor(),
         transforms.Normalize((0.1307,), (0.3081,))
         ])
-    dataset1 = datasets.MNIST('/data/workspace/myshixun/data', train=True, download=True,
+    dataset1 = datasets.MNIST('/data/workspace/myshixun/data', train=True, download=False,
                        transform=transform)
     dataset2 = datasets.MNIST('/data/workspace/myshixun/data', train=False,
                        transform=transform)
