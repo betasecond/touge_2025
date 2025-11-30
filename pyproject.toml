@@ -3,4 +3,6 @@ name = "touge-2025"
 version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "python-docx>=1.2.0",
+]
