@@ -2,7 +2,7 @@
 import numpy as np
 import random
 
-#寻找eps邻域内的点
+#寻找eps邻域内的点 (已给出)
 def findNeighbor(j,X,eps):
     N=[]
     for p in range(X.shape[0]):   #找到所有领域内对象
@@ -20,37 +20,54 @@ def dbscan(X,eps,min_Pts):
     output:cluster(list):聚类结果
     '''
     #********* Begin *********#
-    k = 0  # 簇编号
-    n = X.shape[0]
-    cluster = [-1] * n  # 初始化所有点为噪声点(-1)
-    visited = [False] * n  # 标记点是否被访问过
-
-    for i in range(n):
-        if visited[i]:
+    n_samples = X.shape[0]
+    # 初始化聚类结果：-2 表示未访问，-1 表示噪声，0及以上表示簇标签
+    cluster = [-2] * n_samples
+    cluster_id = 0
+    
+    for i in range(n_samples):
+        # 如果该点已经处理过，则跳过
+        if cluster[i] != -2:
             continue
-        visited[i] = True
+            
+        # 获取当前点的邻域点索引
         neighbors = findNeighbor(i, X, eps)
-
+        
+        # 步骤1：判断是否为核心对象
         if len(neighbors) < min_Pts:
-            # 非核心点，暂时标记为噪声
-            continue
+            # 暂时标记为噪声点
+            cluster[i] = -1
+        else:
+            # 步骤2：创建一个新簇，并开始扩展
+            cluster[i] = cluster_id
+            
+            # 使用集合作为种子队列，寻找所有密度可达的点
+            seeds = set(neighbors)
+            if i in seeds:
+                seeds.remove(i)
+            
+            while seeds:
+                # 弹出队列中的一个点进行检查
+                j = seeds.pop()
+                
+                # 如果该点之前被标记为噪声，它现在成了当前簇的边界点
+                if cluster[j] == -1:
+                    cluster[j] = cluster_id
+                
+                # 如果该点还未被访问
+                if cluster[j] != -2:
+                    continue
+                
+                # 将该点加入当前簇
+                cluster[j] = cluster_id
+                
+                # 步骤3：如果 j 也是核心点，则将其邻域点加入种子队列（密度溢出）
+                j_neighbors = findNeighbor(j, X, eps)
+                if len(j_neighbors) >= min_Pts:
+                    seeds.update(j_neighbors)
+            
+            # 完成一个簇的扩展，标签自增
+            cluster_id += 1
 
-        # 发现核心点，创建新簇
-        cluster[i] = k
-        seeds = list(neighbors)
-
-        j = 0
-        while j < len(seeds):
-            q = seeds[j]
-            if not visited[q]:
-                visited[q] = True
-                q_neighbors = findNeighbor(q, X, eps)
-                if len(q_neighbors) >= min_Pts:
-                    # q也是核心点，扩展邻域
-                    seeds.extend(q_neighbors)
-            if cluster[q] == -1:
-                cluster[q] = k
-            j += 1
-        k += 1
     #********* End *********#
     return cluster
