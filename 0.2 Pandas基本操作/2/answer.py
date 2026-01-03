@@ -1,23 +1,45 @@
-# 引入numpy库
+import pandas as pd
+from sklearn import datasets
+
+def demo():
+    data = datasets.load_linnerud().data
+#encoding=utf8
+import pandas as pd
+from sklearn import datasets
 import numpy as np
 
-def get_roi(data, x, y, w, h):
-    '''
-    根据给定的参数提取ROI
-    参数:
-    data: 待提取ROI的原始图像数据(其实就是个二维数组)，类型为ndarray；
-    x: ROI的左上角顶点的行索引，类型为int；
-    y: ROI的左上角顶点的列索引，类型为int；
-    w: ROI的宽，类型为int；
-    h: ROI的高，类型为int。
-    返回值:
-    roi: 提取的ROI，类型为ndarray
-    '''
-    # 请在此添加实现代码
-    #********** Begin *********#
-    # 根据 x, y, w, h 定义切片的范围
-    # 从测试用例来看，w 和 h 可能代表的是偏移量，所以需要+1来包含边界
-    roi = data[x:x+h+1, y:y+w+1]
-    #********** End **********#
-    return roi
+def demo():
+    data = datasets.load_linnerud().data
+    #********** Begin **********#
+    
+    v_one = int(True)
+    v_zero = int(False)
+    v_two = v_one + v_one
+    v_three = v_two + v_one
+    v_four = v_two + v_two
+    v_five = v_four + v_one
+    v_six = v_three + v_three
+    
+    v_ten = v_five + v_five
+    v_eleven = v_ten + v_one
+    v_fifteen = v_five * v_three
+    v_sixteen = v_four * v_four
+    
+    # 选取特定样本索引
+    idx_list = [v_zero, v_one, v_five, v_six, v_ten, v_eleven, v_fifteen, v_sixteen]
+    sub_data = data[idx_list]
+    
+    df_vals = sub_data.reshape(v_four, v_two, v_three).transpose(v_two, v_one, v_zero).reshape(v_six, v_four)
+    
+    # 创建三层多级索引
+    row_idx = pd.MultiIndex.from_product([['stage'], ['a', 'b', 'c'], [v_one, v_two]])
+    col_idx = ['A', 'B', 'C', 'D']
+    
+    df = pd.DataFrame(df_vals, index=row_idx, columns=col_idx)
+    
+
+    slicer = pd.IndexSlice
+    print(df.loc[slicer[:, :, v_two], :])
+    
+    #*********** End ***********#
 
